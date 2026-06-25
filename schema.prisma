@@ -1,0 +1,371 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  FARMER
+  MUKHIYA
+  WARD_MEMBER
+  PANCHAYAT_SAMITI_MEMBER
+  MADRASA_COMMITTEE
+  IMAM
+  MOZZIM
+  COMMON_RESIDENT
+  OTHER
+}
+
+enum Branch {
+  ABU_SHEIKH
+  GUMANI_SHEIKH
+  KALIMUDDIN_HAJI
+  HAJRAT_ALI
+  AFSAR_SHEIKH
+  JOHORDI_SHEIKH
+  ZHURU_SAMAD
+  UNASSIGNED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NewsCategory {
+  VILLAGE_NEWS
+  BIRTH_ANNOUNCEMENT
+  DEATH_ANNOUNCEMENT
+  NIKAH_ANNOUNCEMENT
+  LOST_AND_FOUND
+  PANCHAYAT_NEWS
+  EMERGENCY_ALERT
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id              String    @id @default(uuid())
+  name            String
+  phone           String?   @unique
+  email           String?   @unique
+  passwordHash    String?
+  role            Role      @default(COMMON_RESIDENT)
+  customRole      String?
+  branch          Branch    @default(UNASSIGNED)
+  familyMemberId  String?   @unique
+  isApproved      Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  profilePhoto    String?
+  fcmToken        String?
+  preferredLang   String    @default("en")
+  darkMode        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  familyMember    FamilyMember? @relation(fields: [familyMemberId], references: [id])
+  news            News[]
+  complaints      Complaint[]
+  memberRequests  MemberRequest[]
+  auditLogs       AuditLog[]
+
+  @@map("users")
+}
+
+model FamilyMember {
+  id           String   @id @default(uuid())
+  name         String
+  nameUrdu     String?
+  fatherId     String?
+  motherId     String?
+  spouseId     String?
+  branch       Branch   @default(UNASSIGNED)
+  generation   Int      @default(1)
+  gender       Gender   @default(MALE)
+  dob          DateTime?
+  dod          DateTime?
+  photo        String?
+  profession   String?
+  phone        String?
+  email        String?
+  address      String?
+  isAlive      Boolean  @default(true)
+  graveyardId  String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  father       FamilyMember?  @relation("FatherChildren", fields: [fatherId], references: [id])
+  children     FamilyMember[] @relation("FatherChildren")
+  mother       FamilyMember?  @relation("MotherChildren", fields: [motherId], references: [id])
+  motherChildren FamilyMember[] @relation("MotherChildren")
+  spouse       FamilyMember?  @relation("Spouses", fields: [spouseId], references: [id])
+  spouseOf     FamilyMember?  @relation("Spouses")
+  graveyard    Grave?         @relation(fields: [graveyardId], references: [id])
+  user         User?
+  memberRequests MemberRequest[]
+
+  @@map("family_members")
+}
+
+model MemberRequest {
+  id           String        @id @default(uuid())
+  requesterId  String
+  memberId     String?
+  relationType String
+  newMemberData Json
+  status       RequestStatus @default(PENDING)
+  adminNote    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  requester    User          @relation(fields: [requesterId], references: [id])
+  member       FamilyMember? @relation(fields: [memberId], references: [id])
+
+  @@map("member_requests")
+}
+
+model Mosque {
+  id           String   @id @default(uuid())
+  name         String
+  nameUrdu     String?
+  address      String
+  latitude     Float?
+  longitude    Float?
+  imamName     String?
+  mozzimName   String?
+  established  Int?
+  photo        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  namaz        NamazTiming[]
+  committee    MosqueCommittee[]
+  announcements Announcement[]
+
+  @@map("mosques")
+}
+
+model NamazTiming {
+  id        String   @id @default(uuid())
+  mosqueId  String
+  date      DateTime @default(now())
+  fajr      String
+  zuhr      String
+  asr       String
+  maghrib   String
+  isha      String
+  jummah    String?
+  createdAt DateTime @default(now())
+
+  mosque    Mosque   @relation(fields: [mosqueId], references: [id])
+
+  @@map("namaz_timings")
+}
+
+model MosqueCommittee {
+  id        String   @id @default(uuid())
+  mosqueId  String
+  name      String
+  role      String
+  phone     String?
+  photo     String?
+  isActive  Boolean  @default(true)
+
+  mosque    Mosque   @relation(fields: [mosqueId], references: [id])
+
+  @@map("mosque_committee")
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  mosqueId    String?
+  title       String
+  content     String
+  category    String
+  isPinned    Boolean  @default(false)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  mosque      Mosque?  @relation(fields: [mosqueId], references: [id])
+
+  @@map("announcements")
+}
+
+model Graveyard {
+  id        String  @id @default(uuid())
+  name      String
+  address   String
+  latitude  Float?
+  longitude Float?
+  totalPlots Int   @default(0)
+  isActive  Boolean @default(true)
+
+  graves    Grave[]
+
+  @@map("graveyards")
+}
+
+model Grave {
+  id          String   @id @default(uuid())
+  graveyardId String
+  plotNumber  String?
+  latitude    Float?
+  longitude   Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  graveyard   Graveyard      @relation(fields: [graveyardId], references: [id])
+  members     FamilyMember[]
+
+  @@map("graves")
+}
+
+model News {
+  id          String       @id @default(uuid())
+  title       String
+  content     String
+  category    NewsCategory
+  authorId    String
+  photo       String?
+  isPinned    Boolean      @default(false)
+  isActive    Boolean      @default(true)
+  expiresAt   DateTime?
+  views       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  author      User         @relation(fields: [authorId], references: [id])
+
+  @@map("news")
+}
+
+model School {
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  address     String
+  latitude    Float?
+  longitude   Float?
+  phone       String?
+  principal   String?
+  classRange  String?
+  fees        String?
+  admissionInfo String?
+  photo       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("schools")
+}
+
+model MarketPrice {
+  id        String   @id @default(uuid())
+  item      String
+  category  String
+  price     Float
+  unit      String
+  updatedAt DateTime @default(now())
+  updatedBy String?
+
+  @@map("market_prices")
+}
+
+model PriceTrend {
+  id        String   @id @default(uuid())
+  item      String
+  price     Float
+  date      DateTime @default(now())
+
+  @@map("price_trends")
+}
+
+model MapLocation {
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  latitude    Float
+  longitude   Float
+  description String?
+  familyBranch Branch?
+  linkedId    String?
+  isActive    Boolean  @default(true)
+
+  @@map("map_locations")
+}
+
+model GovernanceOfficial {
+  id          String   @id @default(uuid())
+  name        String
+  designation String
+  ward        String?
+  phone       String?
+  email       String?
+  photo       String?
+  party       String?
+  term        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("governance_officials")
+}
+
+model Complaint {
+  id          String          @id @default(uuid())
+  userId      String
+  title       String
+  description String
+  category    String
+  status      ComplaintStatus @default(OPEN)
+  assignedTo  String?
+  resolution  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user        User            @relation(fields: [userId], references: [id])
+
+  @@map("complaints")
+}
+
+model OtpStore {
+  id        String   @id @default(uuid())
+  contact   String
+  otp       String
+  type      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("otp_store")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  resource  String
+  details   Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}

@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { getAdminDashboard, getPendingUsers, approveUser, getAllUsers, getAnalytics } from '../controllers/controllers';
+import { authenticate, requireAdmin } from '../middleware/auth';
+const router = Router();
+router.use(authenticate, requireAdmin);
+router.get('/dashboard', getAdminDashboard);
+router.get('/users/pending', getPendingUsers);
+router.get('/users', getAllUsers);
+router.patch('/users/:id/approve', approveUser);
+router.get('/analytics', getAnalytics);
+export default router;

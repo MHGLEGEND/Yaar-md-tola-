@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 79 70 229;
+    --gold: 245 158 11;
+    --emerald: 16 185 129;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-200;
+  }
+
+  .dark body {
+    @apply bg-gray-950 text-gray-100;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-sm;
+  }
+
+  .btn-gold {
+    @apply bg-gold-500 hover:bg-gold-600 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-sm;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-green { @apply badge bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200; }
+  .badge-blue  { @apply badge bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200; }
+  .badge-gold  { @apply badge bg-gold-100 text-gold-700 dark:bg-gold-900 dark:text-gold-200; }
+  .badge-red   { @apply badge bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200; }
+  .badge-gray  { @apply badge bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200; }
+
+  .section-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-1;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 dark:text-gray-400 text-sm mb-6;
+  }
+
+  .nav-item {
+    @apply flex flex-col items-center gap-1 py-2 px-3 text-gray-500 dark:text-gray-400 transition-colors duration-200;
+  }
+
+  .nav-item.active {
+    @apply text-primary-600 dark:text-primary-400;
+  }
+
+  .urdu {
+    @apply font-urdu text-right;
+    direction: rtl;
+  }
+
+  /* Islamic geometric border */
+  .islamic-border {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(99, 102, 241, 0.05) 10px,
+      rgba(99, 102, 241, 0.05) 20px
+    );
+  }
+
+  /* Family tree node styles */
+  .tree-node {
+    @apply cursor-pointer select-none;
+  }
+
+  .tree-node-card {
+    @apply bg-white dark:bg-gray-800 border-2 border-primary-200 dark:border-primary-700 rounded-xl p-3 shadow-sm hover:shadow-md hover:border-primary-400 transition-all duration-200;
+    min-width: 140px;
+    max-width: 180px;
+  }
+
+  .tree-node-card.active {
+    @apply border-gold-400 bg-gold-50 dark:bg-gold-900/20;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-gray-100 dark:bg-gray-800; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+}

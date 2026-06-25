@@ -1,0 +1,10 @@
+include ':app'
+include ':capacitor-android'
+project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+include ':capacitor-cordova-android-plugins'
+project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins')
+
+// This file is normally auto-generated/maintained by `npx cap sync android`.
+// It is provided here so the project structure is complete and buildable
+// immediately after `npm install` + `npx cap sync`.
+apply from: 'capacitor.settings.gradle'

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Mosque silhouette icon: dome + minarets, gold on transparent, sized for adaptive icon safe-zone -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M54,24 C60,24 65,29 65,35 C65,38 63.5,40.5 61,42.3 L61,48 L47,48 L47,42.3 C44.5,40.5 43,38 43,35 C43,29 48,24 54,24 Z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M50,30 L58,30 L58,26 L54,22 L50,26 Z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M30,46 L34,46 L34,80 L30,80 Z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M74,46 L78,46 L78,80 L74,80 Z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M28,42 C28,38 30,36 32,36 C34,36 36,38 36,42 L36,46 L28,46 Z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M72,42 C72,38 74,36 76,36 C78,36 80,38 80,42 L80,46 L72,46 Z" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M40,80 L40,52 C40,44 46,38 54,38 C62,38 68,44 68,52 L68,80 Z" />
+    <path
+        android:fillColor="#1E1B4B"
+        android:pathData="M50,80 L50,66 C50,63.2 51.8,61 54,61 C56.2,61 58,63.2 58,66 L58,80 Z" />
+</vector>

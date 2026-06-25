@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace "com.yaarmohammadtola.app"
+    compileSdkVersion 34
+
+    defaultConfig {
+        applicationId "com.yaarmohammadtola.app"
+        minSdkVersion 22
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+
+    signingConfigs {
+        release {
+            // These values are pulled from gradle.properties / environment at build time.
+            // See SETUP_ANDROID.md for how to generate the keystore and configure these.
+            storeFile file(project.hasProperty('YMT_STORE_FILE') ? project.YMT_STORE_FILE : '../../ymt-release.keystore')
+            storePassword project.hasProperty('YMT_STORE_PASSWORD') ? project.YMT_STORE_PASSWORD : System.getenv('YMT_STORE_PASSWORD')
+            keyAlias project.hasProperty('YMT_KEY_ALIAS') ? project.YMT_KEY_ALIAS : 'ymt-key'
+            keyPassword project.hasProperty('YMT_KEY_PASSWORD') ? project.YMT_KEY_PASSWORD : System.getenv('YMT_KEY_PASSWORD')
+        }
+    }
+
+    buildTypes {
+        debug {
+            // Debug APKs are signed automatically with the default Android debug key.
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES']
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core-splashscreen:1.0.1"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push notifications will not work.")
+}
